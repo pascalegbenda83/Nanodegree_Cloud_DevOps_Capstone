@@ -22,7 +22,7 @@
         "containers":[
           {
             "name":"blue",
-            "image":"pascalegbenda/blueimage",
+            "image":"pascalegbenda/blue_image",
             "ports":[
               {
                 "name":"http-server",

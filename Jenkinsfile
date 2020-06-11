@@ -11,8 +11,8 @@ pipeline {
         }
         stage('Build and Publish Docker Image'){
                     steps {
-                        sh 'docker build -t pascalegbenda/blueimage -f Blue-Green/Blue/Dockerfile Blue-Green/Blue'
-                        sh 'docker build -t pascalegbenda/greenimage -f Blue-Green/Green/Dockerfile Blue-Green/Green'
+                        sh 'docker build -t pascalegbenda/blue_image -f Blue-Green/Blue/Dockerfile Blue-Green/Blue'
+                        sh 'docker build -t pascalegbenda/green-image -f Blue-Green/Green/Dockerfile Blue-Green/Green'
                         sh 'docker push pascalegbenda/blue_image'
                         sh 'docker push pascalegbenda/green_image'
                         sh 'docker rmi -f pascalegbenda/green_image'

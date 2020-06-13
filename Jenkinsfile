@@ -3,7 +3,7 @@ pipeline{
   environment {
     registryBlue = "pascalegbenda/capstone_blue"
     registryGreen = "pascalegbenda/capstone_green"
-    registryCredential = 'dockerhub'
+    registryCredential = 'DockerHub'
     dockertag = getDockerTag()
   }
   stages{

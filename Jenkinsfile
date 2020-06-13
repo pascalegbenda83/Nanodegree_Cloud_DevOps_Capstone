@@ -46,8 +46,8 @@ pipeline{
         }
     stage('Build Docker Image'){
       steps{
-        sh "docker build -t ${registryBlue}:${dockertag} -f Blue-Green/Blue/Dockerfile Blue-Green/Blue" 
-        sh "docker build -t ${registryGreen}:${dockertag} -f Blue-Green/Green/Dockerfile Blue-Green/Green"
+        sh "docker build -t ${registryBlue}:${dockertag}" .
+        sh "docker build -t ${registryGreen}:${dockertag}" .
       }
     }
     stage('Push Docker Image'){
@@ -60,13 +60,14 @@ pipeline{
             sh "docker push ${registryGreen}:${dockertag}"
             sh "docker tag ${registryGreen}:${dockertag} ${registryGreen}:latest"
             sh "docker push ${registryGreen}:latest"
+            sh "docker rmi -f ${registryBlue}:${dockertag}"
+            sh "docker rmi -f ${registry Green}:${dockertag}"
           }
         }
       }
     }
+  }
 def getDockerTag() {  
   def tag = sh script: 'git rev-parse --short=7 HEAD', returnStdout: true
   return tag.trim()
-}
   }
-}

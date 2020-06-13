@@ -48,7 +48,7 @@ pipeline{
       steps{
         sh "docker build -f Blue-Green/Blue/Dockerfile -t ${registryBlue}:${dockertag}" .
         sh "docker build -f Blue-Green/Green/Dockerfile-t ${registryGreen}:${dockertag}" .
-      }
+       }
     }
     stage('Push Docker Image'){
       steps{

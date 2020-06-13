@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     stages {
@@ -19,3 +18,6 @@ pipeline {
                         sh 'docker rmi -f pascalegbenda/greenimage'
                         sh 'docker rmi -f pascalegbenda/blueimage'
                     }
+               }
+    }
+}

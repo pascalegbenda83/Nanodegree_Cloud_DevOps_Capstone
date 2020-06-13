@@ -1,8 +1,8 @@
 pipeline{
   agent any
   environment {
-    registryBlue = "pascalegbenda/capstone_blue"
-    registryGreen = "pascalegbenda/capstone_green"
+    registryBlue = "pascalegbenda/capstone_blue_deployment"
+    registryGreen = "pascalegbenda/capstone_green_deployment"
     registryCredential = 'DockerHub'
     dockertag = getDockerTag()
   }
@@ -46,8 +46,8 @@ pipeline{
         }
     stage('Build Docker Image'){
       steps{
-        sh "docker build -t ${registryBlue}:${dockertag} -f Blue-Green/Blue/Dockerfile"
-        sh "docker build -t ${registryGreen}:${dockertag} -f Blue-Green/Green/Dockerfile"
+        sh "docker build -t ${registryBlue}:${dockertag} -f Blue-Green/Blue/Dockerfile Blue "
+        sh "docker build -t ${registryGreen}:${dockertag} -f Blue-Green/Green/Dockerfile.green Green "
       }
     }
     stage('Push Docker Image'){
@@ -64,8 +64,22 @@ pipeline{
         }
       }
     }
+
+    stage('Deploying to EKS'){
+      steps{
+        withAWS(credentials: 'aws-creds', region: 'us-west-2') {
+          sh "aws eks --region us-west-2 update-kubeconfig --name CapstoneProject"
+          sh "kubectl apply -f myapp-blue.yml"
+          sh "kubectl apply -f myapp-green.yml"
+          sh "kubectl apply -f myapp-service.yml"
+        }
+      }
+    }
+  }    
+}
+
+
 def getDockerTag() {  
   def tag = sh script: 'git rev-parse --short=7 HEAD', returnStdout: true
   return tag.trim()
   }
-

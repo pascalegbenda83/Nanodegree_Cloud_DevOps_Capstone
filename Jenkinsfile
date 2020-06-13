@@ -20,7 +20,7 @@ pipeline{
           }
         }
       steps {
-          sh 'hadolint /Blue-Green/Blue/Dockerfile.blue | tee -a hadolint_lint.txt'
+          sh 'hadolint /Blue-Green/Blue/Dockerfile | tee -a hadolint_lint.txt'
           sh '''
               lintErrors=$(stat --printf="%s"  hadolint_lint.txt)
               if [ "$lintErrors" -gt "0" ]; then
@@ -31,7 +31,7 @@ pipeline{
                   echo "No Error"
               fi
           '''
-          sh 'hadolint /Blue-Green/Green/Dockerfile.green | tee -a hadolint_lint.txt'
+          sh 'hadolint /Blue-Green/Green/Dockerfile | tee -a hadolint_lint.txt'
           sh '''
               lintErrors=$(stat --printf="%s"  hadolint_lint.txt)
               if [ "$lintErrors" -gt "0" ]; then
@@ -46,7 +46,7 @@ pipeline{
         }
     stage('Build Docker Image'){
       steps{
-        sh "docker build -f Blue-Green/Blue/Dockerfile.blue -t ${registryBlue}:${dockertag} ."
+        sh "docker build -f Blue-Green/Blue/Dockerfile -t ${registryBlue}:${dockertag} ."
         sh "docker build -f Blue-Green/Green/Dockerfile -t ${registryGreen}:${dockertag} ."
       }
     }

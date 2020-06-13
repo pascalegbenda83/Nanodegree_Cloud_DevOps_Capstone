@@ -1,8 +1,8 @@
 pipeline{
   agent any
   environment {
-    registryBlue = "pascalegbenda/blue-image"
-    registryGreen = "pascalegbenda/green-image"
+    registryBlue = "pascalegbenda/capstone_blue"
+    registryGreen = "pascalegbenda/capstone_green"
     registryCredential = 'DockerHub'
     dockertag = getDockerTag()
   }
@@ -44,19 +44,19 @@ pipeline{
           '''
           }
         }
-     stage('Build Docker Image'){
+    stage('Build Docker Image'){
       steps{
-        sh "docker build -f Blue/Dockerfile Blue -t ${registryBlue}:${dockertag}"
-        sh "docker build -f Green/Dockerfile Green -t ${registryGreen}:${dockertag}"
+        sh "docker build -f Blue-Green/Blue/Dockerfile Blue -t ${registryBrue}:${dockertag}"
+        sh "docker build -f Blue-Green/Green/Dockerfile Green -t ${registryGreen}:${dockertag}"
       }
     }
     stage('Push Docker Image'){
       steps{
         script{
           docker.withRegistry('', registryCredential) {
-            sh "docker push ${registryBrue}:${dockertag}"
-            sh "docker tag ${registryBrue}:${dockertag} ${registryBrue}:latest"
-            sh "docker push ${registryBrue}:latest"
+            sh "docker push ${registryBlue}:${dockertag}"
+            sh "docker tag ${registryBlue}:${dockertag} ${registryBlue}:latest"
+            sh "docker push ${registryBlue}:latest"
             sh "docker push ${registryGreen}:${dockertag}"
             sh "docker tag ${registryGreen}:${dockertag} ${registryGreen}:latest"
             sh "docker push ${registryGreen}:latest"
@@ -64,3 +64,22 @@ pipeline{
         }
       }
     }
+
+    stage('Deploying to EKS'){
+      steps{
+        withAWS(credentials: 'aws-creds', region: 'us-west-2') {
+          sh "aws eks --region us-west-2 update-kubeconfig --name CapstoneProject"
+          sh "kubectl apply -f myapp-blue.yml"
+          sh "kubectl apply -f myapp-green.yml"
+          sh "kubectl apply -f myapp-service.yml"
+        }
+      }
+    }
+  }    
+}
+
+
+def getDockerTag() {  
+  def tag = sh script: 'git rev-parse --short=7 HEAD', returnStdout: true
+  return tag.trim()
+  }

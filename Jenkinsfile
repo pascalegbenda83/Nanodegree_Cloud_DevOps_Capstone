@@ -3,7 +3,7 @@ pipeline{
   environment {
     registryBlue = "pascalegbenda/capstone_blue"
     registryGreen = "pascalegbenda/capstone_green"
-    registryCredential = 'DockerHub'
+    registryCredential = 'dockerhub'
     dockertag = getDockerTag()
   }
   stages{
@@ -46,9 +46,9 @@ pipeline{
         }
     stage('Build Docker Image'){
       steps{
-        sh "docker build -f Blue-Green/Blue/Dockerfile -t ${registryBlue}:${dockertag}" .
-        sh "docker build -f Blue-Green/Green/Dockerfile-t ${registryGreen}:${dockertag}" .
-       }
+        sh "docker build -f Blue/Dockerfile -t ${registryBlue}:${dockertag}"
+        sh "docker build -f Green/Dockerfile -t ${registryGreen}:${dockertag}"
+      }
     }
     stage('Push Docker Image'){
       steps{

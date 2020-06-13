@@ -22,7 +22,7 @@
         "containers":[
           {
             "name":"blue",
-            "image":"pascalegbenda/blue_image",
+            "image":"pascalegbenda/capstone_blue_deployment",
             "ports":[
               {
                 "name":"http-server",

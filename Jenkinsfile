@@ -1,23 +1,27 @@
-pipeline {
+pipeline{
   agent any
-  stages {
-    stage('Lint HTML') {
-      steps {
-        sh 'tidy -q -e Blue-Green/Blue/index.html'
-        sh 'tidy -q -e Blue-Green/Green/index.html'
+  environment {
+    registryBlue = "pascalegbenda/capstone_blue"
+    registryGreen = "pascalegbenda/capstone_green"
+    registryCredential = 'DockerHub'
+    dockertag = getDockerTag()
+  }
+  stages{
+    stage('Lint HTML'){
+      steps{
+            sh 'tidy -q -e Blue-Green/Blue/index.html'
+            sh 'tidy -q -e Blue-Green/Green/index.html'
       }
     }
-
-    stage('Lint Dockerfile') {
-      agent {
-        docker {
-          image 'hadolint/hadolint:latest-debian'
+    stage("Lint Dockerfile"){
+      agent{
+          docker{
+              image 'hadolint/hadolint:latest-debian'
+          }
         }
-
-      }
       steps {
-        sh 'hadolint /Blue-Green/Blue/Dockerfile | tee -a hadolint_lint.txt'
-        sh '''
+          sh 'hadolint /Blue-Green/Blue/Dockerfile | tee -a hadolint_lint.txt'
+          sh '''
               lintErrors=$(stat --printf="%s"  hadolint_lint.txt)
               if [ "$lintErrors" -gt "0" ]; then
                   echo "Check Error"
@@ -27,8 +31,8 @@ pipeline {
                   echo "No Error"
               fi
           '''
-        sh 'hadolint /Blue-Green/Green/Dockerfile | tee -a hadolint_lint.txt'
-        sh '''
+          sh 'hadolint /Blue-Green/Green/Dockerfile | tee -a hadolint_lint.txt'
+          sh '''
               lintErrors=$(stat --printf="%s"  hadolint_lint.txt)
               if [ "$lintErrors" -gt "0" ]; then
                   echo "Check Error"
@@ -38,19 +42,17 @@ pipeline {
                   echo "No Error"
               fi
           '''
+          }
+        }
+    stage('Build Docker Image'){
+      steps{
+        sh "docker build -t ${registryBlue}:${dockertag} -f Blue-Green/Blue/Dockerfile Blue-Green/Blue" 
+        sh "docker build -t ${registryGreen}:${dockertag} -f Blue-Green/Green/Dockerfile Blue-Green/Green"
       }
     }
-
-    stage('Build Docker Image') {
-      steps {
-        sh "docker build -f Blue-Green/Blue/Dockerfile -t ${registryBlue}:${dockertag} ."
-        sh "docker build -f Blue-Green/Green/Dockerfile -t ${registryGreen}:${dockertag} ."
-      }
-    }
-
-    stage('Push Docker Image') {
-      steps {
-        script {
+    stage('Push Docker Image'){
+      steps{
+        script{
           docker.withRegistry('', registryCredential) {
             sh "docker push ${registryBlue}:${dockertag}"
             sh "docker tag ${registryBlue}:${dockertag} ${registryBlue}:latest"
@@ -60,27 +62,24 @@ pipeline {
             sh "docker push ${registryGreen}:latest"
           }
         }
-
       }
     }
 
-    stage('Deploying to EKS') {
-      steps {
+    stage('Deploying to EKS'){
+      steps{
         withAWS(credentials: 'aws-creds', region: 'us-west-2') {
-          sh 'aws eks --region us-west-2 update-kubeconfig --name CapstoneProject'
-          sh 'kubectl apply -f myapp-blue.yml'
-          sh 'kubectl apply -f myapp-green.yml'
-          sh 'kubectl apply -f myapp-service.yml'
+          sh "aws eks --region us-west-2 update-kubeconfig --name CapstoneProject"
+          sh "kubectl apply -f myapp-blue.yml"
+          sh "kubectl apply -f myapp-green.yml"
+          sh "kubectl apply -f myapp-service.yml"
         }
-
       }
     }
-
-  }
-  environment {
-    registryBlue = 'pascalegbenda/capstone_blue'
-    registryGreen = 'pascalegbenda/capstone_green'
-    registryCredential = 'DockerHub'
-    dockertag = getDockerTag()
-  }
+  }    
 }
+
+
+def getDockerTag() {  
+  def tag = sh script: 'git rev-parse --short=7 HEAD', returnStdout: true
+  return tag.trim()
+  }

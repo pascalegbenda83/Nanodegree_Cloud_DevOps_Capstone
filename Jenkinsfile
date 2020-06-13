@@ -1,13 +1,21 @@
+
 pipeline {
-
-    checkout scm
-
-    docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
-
-        def capstone = docker.build("pascalegbenda/blue_image -f Blue-Green/Blue/Dockerfile Blue-Green/Blue")
-        def capstone = docker.build("pascalegbenda/green_image -f Blue-Green/Green/Dockerfile Blue-Green/Green")
-
-        /* Push the container to the custom Registry */
-        customImage.push()
-    }
-}
+    agent any
+    stages {
+        stage('Lint HTML & Dockerfile'){
+            steps {
+                sh 'tidy -q -e Blue-Green/Blue/*.html'
+                sh 'tidy -q -e Blue-Green/Green/*.html'
+                sh 'hadolint Blue-Green/Blue/Dockerfile'
+                sh 'hadolint Blue-Green/Green/Dockerfile'
+            }
+        }
+        stage('Build and Publish Docker Image'){
+                    steps {
+                        sh 'docker build -t pascalegbenda/blueimage -f Blue-Green/Blue/Dockerfile Blue-Green/Blue'
+                        sh 'docker build -t pascalegbenda/greenimage -f Blue-Green/Green/Dockerfile Blue-Green/Green'
+                        sh 'docker push pascalegbenda/blueimage'
+                        sh 'docker push pascalegbenda/greenimage'
+                        sh 'docker rmi -f pascalegbenda/greenimage'
+                        sh 'docker rmi -f pascalegbenda/blueimage'
+                    }

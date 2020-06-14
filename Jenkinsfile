@@ -22,7 +22,7 @@ pipeline {
             steps {
                 sh 'hadolint /Blue-Green/Blue/Dockerfile | tee -a hadolint_lint.txt'
                 sh ''
-                '
+              
                 lintErrors = $(stat--printf = "%s"
                     hadolint_lint.txt)
                 if ["$lintErrors" - gt "0"];

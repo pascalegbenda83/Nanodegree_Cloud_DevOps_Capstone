@@ -60,5 +60,3 @@ pipeline{
             sh "docker push ${registryGreen}:${dockertag}"
             sh "docker tag ${registryGreen}:${dockertag} ${registryGreen}:latest"
             sh "docker push ${registryGreen}:latest"
-          }
-        }

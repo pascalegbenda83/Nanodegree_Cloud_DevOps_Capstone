@@ -1,7 +1,8 @@
 # Nanodegree_Cloud_DevOps_Capstone
 
 Capstone Project for Cloud DevOps Nanodegree
-# Github Repo : https://github.com/pascalegbenda83/Nanodegree_Cloud_DevOps_Capstone.git
+# Github Repo : 
+https://github.com/pascalegbenda83/Nanodegree_Cloud_DevOps_Capstone.git
 
 In this project you will apply the skills and knowledge which were developed throughout the Cloud DevOps Nanodegree program. These include:
 

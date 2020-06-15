@@ -1,12 +1,15 @@
 # Nanodegree_Cloud_DevOps_Capstone
 
 Capstone Project for Cloud DevOps Nanodegree
-# Github Repo : 
+# Github Repo
 https://github.com/pascalegbenda83/Nanodegree_Cloud_DevOps_Capstone.git
+
+# Project Overview
 
 In this project you will apply the skills and knowledge which were developed throughout the Cloud DevOps Nanodegree program. These include:
 
 # Working in AWS
+
 - Using Jenkins to implement Continuous Integration and Continuous Deployment
 - Building pipelines
 - Working with Ansible and CloudFormation to deploy clusters

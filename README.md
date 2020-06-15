@@ -5,11 +5,11 @@ Capstone Project for Cloud DevOps Nanodegree
 In this project you will apply the skills and knowledge which were developed throughout the Cloud DevOps Nanodegree program. These include:
 
 # Working in AWS
-Using Jenkins to implement Continuous Integration and Continuous Deployment
-Building pipelines
-Working with Ansible and CloudFormation to deploy clusters
-Building Kubernetes clusters
-Building Docker containers in pipelines
+- Using Jenkins to implement Continuous Integration and Continuous Deployment
+- Building pipelines
+- Working with Ansible and CloudFormation to deploy clusters
+- Building Kubernetes clusters
+- Building Docker containers in pipelines
 
 As a capstone project, the directions are rather more open-ended than they were in the previous projects in the program. You will also be able to make some of your own choices in this capstone, for the type of deployment you implement, which services you will use, and the nature of the application you develop.
 
